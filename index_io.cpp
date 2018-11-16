@@ -334,10 +334,10 @@ static void write_ivf_header (const IndexIVF *ivf, IOWriter *f) {
 }
 
 void write_index (const Index *idx, IOWriter *f) {
-    if (const IndexFlat * idxf = dynamic_cast<const IndexFlat *> (idx)) {
+    if (const IndexFlat * idxf = dynamic_cast<const IndexFlat *> (idx)) { ///类型转换
         uint32_t h = fourcc (
               idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI" :
-              idxf->metric_type == METRIC_L2 ? "IxF2" : nullptr);
+              idxf->metric_type == METRIC_L2 ? "IxF2" : nullptr);    ///将IxF2 转化为二进制
         WRITE1 (h);
         write_index_header (idx, f);
         WRITEVECTOR (idxf->xb);
