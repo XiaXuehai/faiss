@@ -62,7 +62,7 @@ struct Index {
 
     int d;                 ///< vector dimension
     idx_t ntotal;          ///< total nb of indexed vectors
-    bool verbose;          ///< verbosity level
+    bool verbose;          ///< verbosity level信息级别
 
     /// set if the Index does not require training, or if training is done already
     bool is_trained;
@@ -109,6 +109,7 @@ struct Index {
      *
      * return at most k vectors. If there are not enough results for a
      * query, the result array is padded with -1s.
+     * 底库向量数不够返回-1
      *
      * @param x           input vectors to search, size n * d
      * @param labels      output labels of the NNs, size n*k
@@ -122,6 +123,7 @@ struct Index {
      * return all vectors with distance < radius. Note that many
      * indexes do not implement the range_search (only the k-NN search
      * is mandatory).
+     * 设定radius阈值，范围搜索（只支持knn）
      *
      * @param x           input vectors to search, size n * d
      * @param radius      search radius
@@ -133,6 +135,8 @@ struct Index {
     /** return the indexes of the k vectors closest to the query x.
      *
      * This function is identical as search but only return labels of neighbors.
+     * 和搜索相同，但只返回labels of neighbors
+     *
      * @param x           input vectors to search, size n * d
      * @param labels      output labels of the NNs, size n*k
      */
@@ -179,6 +183,7 @@ struct Index {
      * reconstruction that can be decoded from its representation in
      * the index. The residual can be used for multiple-stage indexing
      * methods, like IndexIVF's methods.
+     * 重建后的损失，在多级建索引用到
      *
      * @param x           input vector, size d
      * @param residual    output residual vector, size d

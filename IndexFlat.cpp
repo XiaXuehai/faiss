@@ -27,7 +27,8 @@ IndexFlat::IndexFlat (idx_t d, MetricType metric):
 }
 
 
-
+///xb在IndixFlat.h 中定义；
+///ntotal 在Index.h中定义；
 void IndexFlat::add (idx_t n, const float *x) {
     xb.insert(xb.end(), x, x + n * d);
     ntotal += n;

@@ -447,11 +447,12 @@ static void knn_inner_product_sse (const float * x,
 }
 
 static void knn_L2sqr_sse (
-                const float * x,
-                const float * y,
-                size_t d, size_t nx, size_t ny,
+                const float * x,        //xq
+                const float * y,        //xb
+                size_t d, size_t nx, size_t ny, //维度， xq中的nx个， ny=ntotal
                 float_maxheap_array_t * res)
 {
+    // top-K
     size_t k = res->k;
 
 #pragma omp parallel for
@@ -462,9 +463,9 @@ static void knn_L2sqr_sse (
         float * __restrict simi = res->get_val(i);
         long * __restrict idxi = res->get_ids (i);
 
-        maxheap_heapify (k, simi, idxi);
+        maxheap_heapify (k, simi, idxi);// simi最大初始化，idxi初始化-1
         for (j = 0; j < ny; j++) {
-            float disij = fvec_L2sqr (x_i, y_j, d);
+            float disij = fvec_L2sqr (x_i, y_j, d);// 计算欧氏距离
 
             if (disij < simi[0]) {
                 maxheap_pop (k, simi, idxi);
@@ -472,7 +473,7 @@ static void knn_L2sqr_sse (
             }
             y_j += d;
         }
-        maxheap_reorder (k, simi, idxi);
+        maxheap_reorder (k, simi, idxi); // 排序
     }
 
 }

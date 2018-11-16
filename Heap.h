@@ -59,6 +59,7 @@ struct CMin {
     }
     // value that will be popped first -> must be smaller than all others
     // for int types this is not strictly the smallest val (-max - 1)
+    // 获取T类型的最小值
     inline static T neutral () {
         return -std::numeric_limits<T>::max();
     }
@@ -91,14 +92,14 @@ void heap_pop (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
 {
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
-    typename C::T val = bh_val[k];
+    typename C::T val = bh_val[k]; //最后一个val
     size_t i = 1, i1, i2;
     while (1) {
-        i1 = i << 1;
-        i2 = i1 + 1;
-        if (i1 > k)
+        i1 = i << 1; //i1 左节点
+        i2 = i1 + 1; //i2 右子树
+        if (i1 > k) //
             break;
-        if (i2 == k + 1 || C::cmp(bh_val[i1], bh_val[i2])) {
+        if (i2 == k + 1 || C::cmp(bh_val[i1], bh_val[i2])) { // i1是最后一个节点 或者 i1>i2
             if (C::cmp(val, bh_val[i1]))
                 break;
             bh_val[i] = bh_val[i1];
@@ -106,8 +107,8 @@ void heap_pop (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
             i = i1;
         }
         else {
-            if (C::cmp(val, bh_val[i2]))
-                break;
+            if (C::cmp(val, bh_val[i2]))  // i >右节点退出
+                break;                    // 否则交换，i值更新为右节点
             bh_val[i] = bh_val[i2];
             bh_ids[i] = bh_ids[i2];
             i = i2;
@@ -293,6 +294,7 @@ void maxheap_addn (size_t k, T * bh_val, long * bh_ids,
 
 /* This function maps a binary heap into an sorted structure.
    It returns the number  */
+/// 距离排序，从小到大，有效值个数ii，后补-1，maxval
 template <typename C> inline
 size_t heap_reorder (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
 {
@@ -310,6 +312,7 @@ size_t heap_reorder (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
         if (id != -1) ii++;
     }
     /* Count the number of elements which are effectively returned */
+    // 统计不是-1 的有效值
     size_t nel = ii;
 
     memmove (bh_val, bh_val+k-ii, ii * sizeof(*bh_val));
@@ -351,9 +354,9 @@ struct HeapArray {
     typedef typename C::TI TI;
     typedef typename C::T T;
 
-    size_t nh;    ///< number of heaps
-    size_t k;     ///< allocated size per heap
-    TI * ids;     ///< identifiers (size nh * k)
+    size_t nh;    ///< number of heaps,             xq的数量，堆的数量
+    size_t k;     ///< allocated size per heap      搜索top-K向量，每个堆的长度
+    TI * ids;     ///< identifiers (size nh * k)    搜索结果--（n,k）
     T * val;      ///< values (distances or similarities), size nh * k
 
     /// Return the list of values for a heap
@@ -363,6 +366,7 @@ struct HeapArray {
     TI * get_ids (size_t key) { return ids + key * k; }
 
     /// prepare all the heaps before adding
+    /// 堆初始化，最大或最小值，id为-1
     void heapify ();
 
     /** add nj elements to heaps i0:i0+ni, with sequential ids
