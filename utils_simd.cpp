@@ -199,18 +199,18 @@ float fvec_L2sqr (const float * x,
                  const float * y,
                  size_t d)
 {
-    __m256 msum1 = _mm256_setzero_ps();
+    __m256 msum1 = _mm256_setzero_ps(); // set dst[256:0] := 0
 
     while (d >= 8) {
-        __m256 mx = _mm256_loadu_ps (x); x += 8;
-        __m256 my = _mm256_loadu_ps (y); y += 8;
+        __m256 mx = _mm256_loadu_ps (x); x += 8; //put 256 bit from x to mx
+        __m256 my = _mm256_loadu_ps (y); y += 8; //put 256 bit from y to my
         const __m256 a_m_b1 = mx - my;
-        msum1 += a_m_b1 * a_m_b1;
+        msum1 += a_m_b1 * a_m_b1;   // calculate L2
         d -= 8;
     }
 
-    __m128 msum2 = _mm256_extractf128_ps(msum1, 1);
-    msum2 +=       _mm256_extractf128_ps(msum1, 0);
+    __m128 msum2 = _mm256_extractf128_ps(msum1, 1); //dst[127:0] := a[255:128]
+    msum2 +=       _mm256_extractf128_ps(msum1, 0); //dst[127:0] := a[127:0]
 
     if (d >= 4) {
         __m128 mx = _mm_loadu_ps (x); x += 4;
@@ -226,7 +226,11 @@ float fvec_L2sqr (const float * x,
         __m128 a_m_b1 = mx - my;
         msum2 += a_m_b1 * a_m_b1;
     }
-
+    //
+//    dst[31:0] := a[63:32] + a[31:0]
+//    dst[63:32] := a[127:96] + a[95:64]
+//    dst[95:64] := b[63:32] + b[31:0]
+//    dst[127:96] := b[127:96] + b[95:64]
     msum2 = _mm_hadd_ps (msum2, msum2);
     msum2 = _mm_hadd_ps (msum2, msum2);
     return  _mm_cvtss_f32 (msum2);
