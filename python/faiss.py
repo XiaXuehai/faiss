@@ -18,15 +18,18 @@ import pdb
 # we import * so that the symbol X can be accessed as faiss.X
 
 try:
-    from .swigfaiss_gpu import *
+    from swigfaiss_gpu import *
 except ImportError as e:
 
     if 'No module named' not in e.args[0]:
         # swigfaiss_gpu is there but failed to load: Warn user about it.
         sys.stderr.write("Failed to load GPU Faiss: %s\n" % e.args[0])
         sys.stderr.write("Faiss falling back to CPU-only.\n")
-    from .swigfaiss import *
+    from swigfaiss import *
 
+__version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
+                            FAISS_VERSION_MINOR,
+                            FAISS_VERSION_PATCH)
 
 ##################################################################
 # The functions below add or replace some methods for classes
@@ -365,7 +368,6 @@ add_ref_in_constructor(IndexIDMap, 0)
 add_ref_in_constructor(IndexIDMap2, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_constructor(IndexRefineFlat, 0)
-
 add_ref_in_constructor(IndexBinaryIVF, 0)
 add_ref_in_constructor(IndexBinaryFromFloat, 0)
 
@@ -378,8 +380,11 @@ if hasattr(this_module, 'IndexProxy'):
     # handle all the GPUResources refs
     add_ref_in_function('index_cpu_to_gpu', 0)
     add_ref_in_constructor(GpuIndexFlat, 0)
+    add_ref_in_constructor(GpuIndexFlatIP, 0)
+    add_ref_in_constructor(GpuIndexFlatL2, 0)
     add_ref_in_constructor(GpuIndexIVFFlat, 0)
     add_ref_in_constructor(GpuIndexIVFPQ, 0)
+    add_ref_in_constructor(GpuIndexBinaryFlat, 0)
 
 
 

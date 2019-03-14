@@ -372,7 +372,7 @@ void IndexFlat1D::search (
                 I[wp] = perm[i1];
                 i1++;
             } else {
-                D[wp] = 1.0 / 0.0;
+                D[wp] = std::numeric_limits<float>::infinity();
                 I[wp] = -1;
             }
             wp++;
@@ -387,7 +387,7 @@ void IndexFlat1D::search (
                 I[wp] = perm[i0];
                 i0--;
             } else {
-                D[wp] = 1.0 / 0.0;
+                D[wp] = std::numeric_limits<float>::infinity();
                 I[wp] = -1;
             }
             wp++;
